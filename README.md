@@ -10,13 +10,12 @@
 1.Создадим класс для работы с бд.  
 ![изображение](https://user-images.githubusercontent.com/79984303/138239024-13a81a21-f0ca-4039-9f2d-83db35b9d3d9.png)  
 2.Добавим на activity следующие компоненты:  
-![изображение](https://user-images.githubusercontent.com/79984303/138239526-f44cb256-f9a0-4115-8bdf-9f48556fd15d.png)  
+![изображение](https://i.imgur.com/RjBRekX.png)  
 3.Добавим обработчик событий для всех кнопок.  
-![изображение](https://user-images.githubusercontent.com/79984303/138240890-1133195b-0622-47d8-9f74-9110a697bef0.png)  
-![изображение](https://user-images.githubusercontent.com/79984303/138239149-8634ca4a-9f55-45e4-9263-9c050377de10.png)  
-![изображение](https://user-images.githubusercontent.com/79984303/138239174-8d76eed9-80c9-4ebc-9e19-bfa3cc0d499c.png)  
+![изображение](https://i.imgur.com/UeduCVU.png)  
+![изображение](https://i.imgur.com/vP56FN4.png)  
 4.Проверим работоспособность программы.  
-![изображение](https://user-images.githubusercontent.com/79984303/138242137-9539c455-e6cd-4c9e-8235-f6987b23ef50.png)  
+![изображение](https://i.imgur.com/ToLqQ6Y.png)  
 4.1. Создадим 3 строки.Нажмём на кнопку "Read".В окне "Debug" выведутся добавленные строки.   
 ![изображение](https://user-images.githubusercontent.com/79984303/138241711-9837ca88-c9a0-4644-b368-7d11e0ea1de2.png)  
 4.2.Удалим одну строку.  
