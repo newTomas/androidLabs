@@ -3,91 +3,60 @@ package com.example.labs;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    EditText etId,etName,etEmail;
-    DBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        etId = (EditText) findViewById(R.id.idTextView);
-        etName = (EditText) findViewById(R.id.nameTextView);
-        etEmail = (EditText) findViewById(R.id.emailTextView);
+        Button sendSmsBtn = findViewById(R.id.sendSmsButton);
+        sendSmsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText edit_Number = (EditText) findViewById(R.id.phoneNumber);
+                String phoneNo = edit_Number.getText().toString();
+                EditText sms_edit = (EditText) findViewById(R.id.messageField);
+                String toSms = "smsto:" + edit_Number.getText().toString();
+                String messageText = sms_edit.getText().toString();
+                Intent sms = new Intent(Intent.ACTION_SENDTO, Uri.parse(toSms));
 
-        dbHelper = new DBHelper(this);
+                sms.putExtra("sms_body", messageText);
+                startActivity(sms);
+                SmsManager.getDefault().sendTextMessage(phoneNo, null, messageText.toString(), null, null);
 
-    }
-    @Override
-    public void onClick(View v)
-    {
-        String ID = etId.getText().toString();
-        String name = etName.getText().toString();
-        String email = etEmail.getText().toString();
-
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues(); // класс для добавления новых строк в таблицу
-
-        switch (v.getId())
-        {
-            case R.id.addButton:
-                contentValues.put(DBHelper.KEY_NAME, name);
-                contentValues.put(DBHelper.KEY_MAIL, email);
-                database.insert(DBHelper.TABLE_PERSONS, null, contentValues);
-                break;
-
-            case R.id.readButton:
-                Cursor cursor = database.query(DBHelper.TABLE_PERSONS, null, null, null,
-                        null, null, null); // все поля без сортировки и группировки
-
-                if (cursor.moveToFirst())
+            }
+        });
+        Button callBtn = findViewById(R.id.callBtn);
+        callBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phoneNo = ((TextView) findViewById(R.id.phoneNumber)).getText().toString();
+                if(!TextUtils.isEmpty(phoneNo))
                 {
-                    int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
-                    int nameIndex = cursor.getColumnIndex(DBHelper.KEY_NAME);
-                    int emailIndex = cursor.getColumnIndex(DBHelper.KEY_MAIL);
-                    do {
-                        Log.d("mLog", "ID =" + cursor.getInt(idIndex) +
-                                ", name = " + cursor.getString(nameIndex) +
-                                ", email = " + cursor.getString(emailIndex));
-
-                    } while (cursor.moveToNext());
-                } else
-                    Log.d("mLog", "0 rows");
-
-                cursor.close(); // освобождение памяти
-                break;
-
-            case R.id.clearButton:
-                database.delete(DBHelper.TABLE_PERSONS, null, null);
-                break;
-
-            case R.id.deleteButton:
-                if (ID.equalsIgnoreCase(""))
-                {
-                    break;
+                    String dial = "tel:" + phoneNo;
+                    startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
                 }
-                int delCount = database.delete(DBHelper.TABLE_PERSONS, DBHelper.KEY_ID + "= " + ID, null);
-                Log.d("mLog", "Удалено строк = " + delCount);
-
-            case R.id.updateButton:
-                if (ID.equalsIgnoreCase(""))
-                {
-                    break;
+                else {
+                    Toast.makeText(MainActivity.this, "Введите номер телефона", Toast.LENGTH_SHORT).show();
                 }
-                contentValues.put(DBHelper.KEY_MAIL, email);
-                contentValues.put(DBHelper.KEY_NAME, name);
-                int updCount = database.update(DBHelper.TABLE_PERSONS, contentValues, DBHelper.KEY_ID + "= ?", new String[] {ID});
-                Log.d("mLog", "Обновлено строк = " + updCount);
-        }
-        dbHelper.close(); // закрываем соединение с БД
+
+            }
+        });
+
     }
 }
