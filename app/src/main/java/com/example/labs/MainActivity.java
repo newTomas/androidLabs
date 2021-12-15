@@ -1,114 +1,93 @@
 package com.example.labs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-public class MainActivity extends AppCompatActivity {
-    int PERMISSION_REQUEST_CODE = 1;
-    String fileName = "content.txt";
-
+    EditText etId,etName,etEmail;
+    DBHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    private void requestPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(this, "Permissions should be granted", Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-        }
-    }
+        etId = (EditText) findViewById(R.id.idTextView);
+        etName = (EditText) findViewById(R.id.nameTextView);
+        etEmail = (EditText) findViewById(R.id.emailTextView);
 
-    private boolean checkPermission() {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+        dbHelper = new DBHelper(this);
 
+    }
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    public void onClick(View v)
     {
-        super.onRequestPermissionsResult(requestCode,
-                permissions,
-                grantResults);
+        String ID = etId.getText().toString();
+        String name = etName.getText().toString();
+        String email = etEmail.getText().toString();
 
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(MainActivity.this, "Permission granted", Toast.LENGTH_SHORT) .show();
-            }
-            else {
-                Toast.makeText(MainActivity.this, "Permission denied", Toast.LENGTH_SHORT) .show();
-            }
-        }
-    }
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues(); // класс для добавления новых строк в таблицу
 
-    public void buttonSaveClick(View view)
-    {
-        if(!checkPermission()){
-            requestPermission();
-            return;
-        }
-        try(FileOutputStream fos = openFileOutput(fileName,MODE_PRIVATE))
+        switch (v.getId())
         {
-            EditText textBox = (EditText) findViewById(R.id.save_text);
-            String text = textBox.getText().toString();
-            fos.write(text.getBytes());
-            fos.close();
-            Toast.makeText(this, "Текстовый файл успешно сохранён!",
-            Toast.LENGTH_SHORT).show();
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-            Toast.makeText(this, "Файл не найден!",
-            Toast.LENGTH_SHORT).show();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-            Toast.makeText(this, "Ошибка сохранения файла!",
-            Toast.LENGTH_SHORT).show();
-        }
-    }
+            case R.id.addButton:
+                contentValues.put(DBHelper.KEY_NAME, name);
+                contentValues.put(DBHelper.KEY_MAIL, email);
+                database.insert(DBHelper.TABLE_PERSONS, null, contentValues);
+                break;
 
-    public void buttonOpenClick(View view)
-    {
-        if(!checkPermission()){
-            requestPermission();
-            return;
+            case R.id.readButton:
+                Cursor cursor = database.query(DBHelper.TABLE_PERSONS, null, null, null,
+                        null, null, null); // все поля без сортировки и группировки
+
+                if (cursor.moveToFirst())
+                {
+                    int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+                    int nameIndex = cursor.getColumnIndex(DBHelper.KEY_NAME);
+                    int emailIndex = cursor.getColumnIndex(DBHelper.KEY_MAIL);
+                    do {
+                        Log.d("mLog", "ID =" + cursor.getInt(idIndex) +
+                                ", name = " + cursor.getString(nameIndex) +
+                                ", email = " + cursor.getString(emailIndex));
+
+                    } while (cursor.moveToNext());
+                } else
+                    Log.d("mLog", "0 rows");
+
+                cursor.close(); // освобождение памяти
+                break;
+
+            case R.id.clearButton:
+                database.delete(DBHelper.TABLE_PERSONS, null, null);
+                break;
+
+            case R.id.deleteButton:
+                if (ID.equalsIgnoreCase(""))
+                {
+                    break;
+                }
+                int delCount = database.delete(DBHelper.TABLE_PERSONS, DBHelper.KEY_ID + "= " + ID, null);
+                Log.d("mLog", "Удалено строк = " + delCount);
+
+            case R.id.updateButton:
+                if (ID.equalsIgnoreCase(""))
+                {
+                    break;
+                }
+                contentValues.put(DBHelper.KEY_MAIL, email);
+                contentValues.put(DBHelper.KEY_NAME, name);
+                int updCount = database.update(DBHelper.TABLE_PERSONS, contentValues, DBHelper.KEY_ID + "= ?", new String[] {ID});
+                Log.d("mLog", "Обновлено строк = " + updCount);
         }
-        try(FileInputStream fin = openFileInput(fileName))
-        {
-            byte[] bytes = new byte[fin.available()];
-            fin.read(bytes);
-            String text = new String(bytes);
-            TextView textView = (TextView) findViewById(R.id.load_text);
-            textView.setText(text);
-            fin.close();
-        } catch (IOException ex)
-        {
-            Toast.makeText(this, ex.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        }
+        dbHelper.close(); // закрываем соединение с БД
     }
 }
