@@ -8,9 +8,9 @@
 ## Порядок выполнения
 1. Создадим проект
 2. Настроим внешний вид:  
-![изображение](https://user-images.githubusercontent.com/79984303/145352907-a435b891-5aa1-4600-8eaa-fdbd42dc76b4.png)  
+![изображение](https://i.imgur.com/qYzsi8g.png)  
 3. Добавим в класс с активностью следующий код:  
-![изображение](https://user-images.githubusercontent.com/79984303/145353063-76b017ca-c72f-4f2b-8ba5-d4633a710fba.png)  
+![изображение](blob:https://imgur.com/534f28d1-733a-493d-80e4-4203b8e51189)  
 4. Проверим приложение:
 - Введём номер телефона и сообщение:  
 ![изображение](https://user-images.githubusercontent.com/79984303/145353300-b76efcb6-7636-47ab-bbbf-cf54102c4d88.png)  
