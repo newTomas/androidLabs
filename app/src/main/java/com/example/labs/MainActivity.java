@@ -47,41 +47,32 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         MediaController mediaController = new MediaController(this);
         MyvideoPlayer.setMediaController(mediaController);
         mediaController.setMediaPlayer(MyvideoPlayer);
+    }
 
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyvideoPlayer.start();
+    public void onStartClick(View view){
+        MyvideoPlayer.start();
 
-                startButton.setEnabled(false);
-                startSongButton.setEnabled(false);
-                pauseButton.setEnabled(true);
-                stopButton.setEnabled(true);
-            }
-        });
+        startButton.setEnabled(false);
+        startSongButton.setEnabled(false);
+        pauseButton.setEnabled(true);
+        stopButton.setEnabled(true);
+    }
 
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyvideoPlayer.stopPlayback();
-                MyvideoPlayer.resume();
+    public void onStopClick(View view){
+        MyvideoPlayer.stopPlayback();
+        MyvideoPlayer.resume();
 
-                startButton.setEnabled(true);
-                startSongButton.setEnabled(true);
-                pauseButton.setEnabled(false);
-                stopButton.setEnabled(false);
-            }
-        });
+        startButton.setEnabled(true);
+        startSongButton.setEnabled(true);
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
+    }
 
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyvideoPlayer.pause();
+    public void onPauseClick(View view){
+        MyvideoPlayer.pause();
 
-                startButton.setEnabled(true);
-                pauseButton.setEnabled(false);
-            }
-        });
+        startButton.setEnabled(true);
+        pauseButton.setEnabled(false);
     }
 
     private void stopPlay(){
@@ -99,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         }
     }
 
-    public void onStartClick(View view)
+    public void onStartSongClick(View view)
     {
         mediaPlayer.start();
 
@@ -108,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         pauseSongButton.setEnabled(true);
         startButton.setEnabled(false);
     }
-    public void onPauseClick(View view)
+    public void onPauseSongClick(View view)
     {
         mediaPlayer.pause();
 
@@ -116,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
         pauseSongButton.setEnabled(false);
     }
 
-    public void onStopClick(View view)
+    public void onStopSongClick(View view)
     {
         stopPlay();
 
